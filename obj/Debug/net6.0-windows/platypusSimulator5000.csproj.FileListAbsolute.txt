@@ -1,0 +1,16 @@
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Debug\net6.0-windows\platypusSimulator5000.exe
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Debug\net6.0-windows\platypusSimulator5000.deps.json
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Debug\net6.0-windows\platypusSimulator5000.runtimeconfig.json
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Debug\net6.0-windows\platypusSimulator5000.dll
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Debug\net6.0-windows\platypusSimulator5000.pdb
+C:\Users\thoma\Projects\platypusSimulator5000\obj\Debug\net6.0-windows\platypusSimulator5000.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\thoma\Projects\platypusSimulator5000\obj\Debug\net6.0-windows\platypusSimulator5000.AssemblyInfoInputs.cache
+C:\Users\thoma\Projects\platypusSimulator5000\obj\Debug\net6.0-windows\platypusSimulator5000.AssemblyInfo.cs
+C:\Users\thoma\Projects\platypusSimulator5000\obj\Debug\net6.0-windows\platypusSimulator5000.csproj.CoreCompileInputs.cache
+C:\Users\thoma\Projects\platypusSimulator5000\obj\Debug\net6.0-windows\platypusSimulator5000.dll
+C:\Users\thoma\Projects\platypusSimulator5000\obj\Debug\net6.0-windows\refint\platypusSimulator5000.dll
+C:\Users\thoma\Projects\platypusSimulator5000\obj\Debug\net6.0-windows\platypusSimulator5000.pdb
+C:\Users\thoma\Projects\platypusSimulator5000\obj\Debug\net6.0-windows\platypusSimulator5000.genruntimeconfig.cache
+C:\Users\thoma\Projects\platypusSimulator5000\obj\Debug\net6.0-windows\ref\platypusSimulator5000.dll
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Debug\net6.0-windows\data\buttons.json
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Debug\net6.0-windows\data\dialogues.json

@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>  <!-- Prevents console window -->
+    <TargetFramework>net6.0-windows</TargetFramework>  <!-- Must target Windows -->
+    <UseWindowsForms>true</UseWindowsForms>  <!-- Enables WinForms -->
+  </PropertyGroup>
+    <ItemGroup>
+    <None Update="data/buttons.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None> 
+    <None Update="data/dialogues.json">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

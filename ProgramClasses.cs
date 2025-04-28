@@ -6,47 +6,74 @@ using System.Text.Json.Serialization;
 
 public class GameBalance
 {
-    public float HealthDecayRate { get; } = 10f;  // seconds to min health
-    public float VigorDecayRate { get; } = 1.5f;  // seconds to max vigor
-    public float StressGainRate { get; } = 120f;  // seconds to max stress
-    public float FamineGainRate { get; } = 60f;   // seconds to max famine
-    public float variationRange { get; } = 0.1f;  // Random variation range
+    // Existing properties
+    public float HealthDecayRate { get; } = 10f;
+    public float VigorDecayRate { get; } = 1.5f;
+    public float StressGainRate { get; } = 120f;
+    public float FamineGainRate { get; } = 60f;
+    public float VariationRange { get; } = 0.1f;
+
+    // New properties for action effects
+    public float PeckMoneyMin { get; } = 3f;
+    public float PeckMoneyMax { get; } = 9f;
+
+    public float GlowWisdomMin { get; } = 0.03f;
+    public float GlowWisdomMax { get; } = 0.06f;
+
+    public float SmokeStressReduction { get; } = 0.28f;
+    public float DrinkHealthIncrease { get; } = 0.25f;
+
+    public float GambleJackpotChance { get; } = 3f;
+    public float GambleJackpotAmount { get; } = 100000f;
+    public float GambleLossAmount { get; } = 10f;
+    public float GambleStressIncrease { get; } = 0.5f;
+
+    public float PokemonBaseWinRate { get; } = 0.5f;
+    public float PokemonSwordBonus { get; } = 0.2f;
+    public float PokemonShieldBonus { get; } = 0.1f;
+
+    public float PokemonWinMoneyMin { get; } = 15f;
+    public float PokemonWinMoneyMax { get; } = 45f;
+    public float PokemonWinWisdomIncrease { get; } = 0.334f;
+    public float PokemonWinHealthDecrease { get; } = 0.15f;
+
+    public float PokemonLoseMoneyMin { get; } = 30f;
+    public float PokemonLoseMoneyMax { get; } = 60f;
+    public float PokemonLoseStressIncrease { get; } = 0.3f;
+    public float PokemonLoseHealthDecrease { get; } = 0.25f;
 }
 
 public class PlayerData
 {
+    // Stats
     public float Stress { get; set; } = 0f;
     public float Famine { get; set; } = 0f;
     public float Health { get; set; } = 1f;
     public float Wisdom { get; set; } = 0f;
     public float Vigor { get; set; } = 1f;
-    public float Money { get; set; } = 0;
+    public float Money { get; set; } = 42353436f;
     public int Level { get; set; } = 1;
 
     // Inventory
-    public int Beers { get; set; } = 0;
-    public int Cigs { get; set; } = 0;
-
-    // Knowledge
-    public bool CanRead { get; set; } = false;
-    public bool HasPurse { get; set; } = false;
+    public int Beers { get; set; }
+    public int Cigs { get; set; }
 
     // Equipment
-    public bool HasSword { get; set; } = false;
-    public bool IsSwordEquipped { get; set; } = false;
-
-    public bool HasShield { get; set; } = false;
-    public bool IsShieldEquipped { get; set; } = false;
+    public bool HasSword { get; set; }
+    public bool IsSwordEquipped { get; set; }
+    public bool HasShield { get; set; }
+    public bool IsShieldEquipped { get; set; }
 
     // Attributes
-    public bool HasInstructions { get; set; } = false;
-    public bool HasVision { get; set; } = false;
-    public bool HasMemory { get; set; } = false;
-    public bool HasMembers { get; set; } = false;
-    public bool HasStomach { get; set; } = false;
-    public bool HasHouse { get; set; } = false;
+    public bool CanRead { get; set; }
+    public bool HasPurse { get; set; }
+    public bool HasInstructions { get; set; }
+    public bool HasVision { get; set; }
+    public bool HasMemory { get; set; }
+    public bool HasMembers { get; set; }
+    public bool HasStomach { get; set; }
+    public bool HasHouse { get; set; }
 
-    // Computed property
     public int AvatarState => (HasSword ? 1 : 0) + (HasShield ? 2 : 0);
 }
 
@@ -117,18 +144,9 @@ public class GameButton : Button
 public class AvatarDisplay : IDisposable
 {
     private readonly PictureBox _avatarBox;
-    private PlayerData _player;
-
-    // Image cache
-    private static Image _baseImage;
-    private static Image _shieldImage;
-    private static Image _swordImage;
+    private readonly PlayerData _player;
+    private static readonly Dictionary<string, Image> _imageCache = new Dictionary<string, Image>();
     private static readonly object _imageLock = new object();
-
-    // State tracking
-    private int _lastAvatarState;
-    private bool _lastSwordEquipped;
-    private bool _lastShieldEquipped;
 
     public PictureBox AvatarBox => _avatarBox;
 
@@ -141,73 +159,67 @@ public class AvatarDisplay : IDisposable
             BackColor = Color.Transparent,
             SizeMode = PictureBoxSizeMode.Zoom
         };
-        LoadBaseImages();
+        LoadImages();
         UpdateAvatar();
     }
 
-    private void LoadBaseImages()
+    private void LoadImages()
+    {
+        lock (_imageLock)
+        {
+            if (_imageCache.Count == 0)
+            {
+                _imageCache["base"] = LoadImage("assets/sprites/SerenePandemonium.png");
+                _imageCache["sword"] = LoadImage("assets/sprites/SwordOfEternalMadness.png");
+                _imageCache["shield"] = LoadImage("assets/sprites/ShieldOfTheSacreReflection.png");
+            }
+        }
+    }
+
+    private Image LoadImage(string path)
     {
         try
         {
-            _baseImage = Image.FromFile("assets/sprites/SerenePandemonium.png")
-                ?? CreatePlaceholderImage();
+            return Image.FromFile(path) ?? CreatePlaceholderImage(path);
         }
         catch
         {
-            _baseImage = CreatePlaceholderImage();
+            return CreatePlaceholderImage(path);
         }
     }
 
     public void UpdateAvatar()
     {
-        if (!NeedsImageUpdate()) return;
-
         using (var newImage = ComposeAvatar())
         {
             _avatarBox.Image?.Dispose();
-            _avatarBox.Image = new Bitmap(newImage); // Create new bitmap for PictureBox
+            _avatarBox.Image = new Bitmap(newImage);
         }
-
-        // Update tracking state
-        _lastAvatarState = _player.AvatarState;
-        _lastSwordEquipped = _player.IsSwordEquipped;
-        _lastShieldEquipped = _player.IsShieldEquipped;
-    }
-
-    private bool NeedsImageUpdate()
-    {
-        return _avatarBox.Image == null ||
-               _lastAvatarState != _player.AvatarState ||
-               _lastSwordEquipped != _player.IsSwordEquipped ||
-               _lastShieldEquipped != _player.IsShieldEquipped;
     }
 
     private Image ComposeAvatar()
     {
-        if (_player.AvatarState == 0 && !_player.IsSwordEquipped && !_player.IsShieldEquipped)
-            return new Bitmap(_baseImage);
-
         var composite = new Bitmap(150, 131);
         using (var g = Graphics.FromImage(composite))
         {
             if (_player.HasShield && _player.IsShieldEquipped)
-                g.DrawImage(_shieldImage, 0, 0, 150, 131);
+                g.DrawImage(_imageCache["shield"], 0, 0, 150, 131);
 
-            g.DrawImage(_baseImage, 0, 0, 150, 131);
+            g.DrawImage(_imageCache["base"], 0, 0, 150, 131);
 
             if (_player.HasSword && _player.IsSwordEquipped)
-                g.DrawImage(_swordImage, 0, 0, 150, 131);
+                g.DrawImage(_imageCache["sword"], 0, 0, 150, 131);
         }
         return composite;
     }
 
-    private Image CreatePlaceholderImage()
+    private Image CreatePlaceholderImage(string imageName)
     {
         var img = new Bitmap(150, 131);
         using (var g = Graphics.FromImage(img))
         {
             g.Clear(Color.Magenta);
-            g.DrawString("Image Missing", new Font("Arial", 10), Brushes.Black, 10, 10);
+            g.DrawString($"Missing: {imageName}", new Font("Arial", 8), Brushes.Black, 10, 10);
         }
         return img;
     }
@@ -219,16 +231,20 @@ public class AvatarDisplay : IDisposable
 
     public static void CleanupStaticImages()
     {
-        _baseImage?.Dispose();
-        _shieldImage?.Dispose();
-        _swordImage?.Dispose();
-        _baseImage = _shieldImage = _swordImage = null;
+        lock (_imageLock)
+        {
+            foreach (var image in _imageCache.Values)
+            {
+                image?.Dispose();
+            }
+            _imageCache.Clear();
+        }
     }
 }
 
-class NoScrollOnFocusPanel : Panel
+public class NoScrollOnFocusPanel : Panel
 {
-    protected override System.Drawing.Point ScrollToControl(Control activeControl)
+    protected override Point ScrollToControl(Control activeControl)
     {
         return this.AutoScrollPosition;
     }

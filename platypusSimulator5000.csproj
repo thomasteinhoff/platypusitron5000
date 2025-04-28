@@ -5,11 +5,18 @@
     <UseWindowsForms>true</UseWindowsForms>  <!-- Enables WinForms -->
   </PropertyGroup>
     <ItemGroup>
+
     <None Update="data/buttons.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None> 
+
     <None Update="data/dialogues.json">
-    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+
+    <None Update="data/instructionsNote.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    
   </ItemGroup>
 </Project>

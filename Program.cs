@@ -5,9 +5,14 @@ using System.Text.Json;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 class Program
 {
+    // Constants
+    private const string ButtonsPath = "data/buttons.json";
+    private const string DialoguesPath = "data/dialogues.json";
+
     private static Form _mainForm;
     private static System.Windows.Forms.Timer _gameTimer;
     private static float _deltaTime;
@@ -22,23 +27,101 @@ class Program
     private static Label _levelLabel;
     private static ButtonData _cachedButtonData;
     private static bool _isDead = false;
+    private static bool _isDarkTheme = true;
+    private static Button _helpButton;
 
     private static readonly Dictionary<string, Action> ActionEffects = new Dictionary<string, Action>
     {
-        ["action_peck"] = () => _player.Money += Random.Shared.Next(3000, 9000) / 1000f,
-        ["action_glow"] = () => _player.Wisdom += Random.Shared.Next(3, 6) / 100f,
-        ["action_poison"] = () => _player.Famine -= 0.3f,
+        ["action_peck"] = () => _player.Money += Random.Shared.Next(
+            (int)(_gamebalance.PeckMoneyMin * 1000),
+            (int)(_gamebalance.PeckMoneyMax * 1000)) / 1000f,
+
+        ["action_glow"] = () => _player.Wisdom += Random.Shared.Next(
+            (int)(_gamebalance.GlowWisdomMin * 100),
+            (int)(_gamebalance.GlowWisdomMax * 100)) / 100f,
+
+        ["action_poison"] = () => _player.Famine = 0f,
+
         ["action_smoke"] = () =>
         {
-            _player.Stress -= 0.18f;
+            _player.Stress -= _gamebalance.SmokeStressReduction;
             _player.Cigs--;
         },
+
         ["action_drink"] = () =>
         {
-            _player.Health += 0.25f;
+            _player.Health += _gamebalance.DrinkHealthIncrease;
             _player.Beers--;
         },
-        ["action_read"] = () => _player.CanRead = true
+
+        ["action_gamble"] = () =>
+        {
+            float randomValue = (float)Random.Shared.Next(1000000);
+
+            if (randomValue < _gamebalance.GambleJackpotChance)
+            {
+                _player.Money += _gamebalance.GambleJackpotAmount;
+                ShowDialogues(2);
+            }
+            else
+            {
+                _player.Money -= _gamebalance.GambleLossAmount;
+                _player.Stress += _gamebalance.GambleStressIncrease;
+                ShowDialogues(3);
+            }
+        },
+
+        ["action_pokemon"] = () =>
+        {
+            float randomValue = Random.Shared.NextSingle();
+            float winrate = _gamebalance.PokemonBaseWinRate;
+            if (_player.IsSwordEquipped) winrate += _gamebalance.PokemonSwordBonus;
+            if (_player.IsShieldEquipped) winrate += _gamebalance.PokemonShieldBonus;
+
+            if (randomValue > winrate)  // win
+            {
+                _player.Money += Random.Shared.Next(
+                    (int)(_gamebalance.PokemonWinMoneyMin * 100),
+                    (int)(_gamebalance.PokemonWinMoneyMax * 100)) / 100f;
+                _player.Wisdom += _gamebalance.PokemonWinWisdomIncrease;
+                _player.Health -= _gamebalance.PokemonWinHealthDecrease;
+                ShowDialogues(4);
+            }
+            else                        // lose
+            {
+                _player.Stress += _gamebalance.PokemonLoseStressIncrease;
+                _player.Health -= _gamebalance.PokemonLoseHealthDecrease;
+                _player.Money -= Random.Shared.Next(
+                    (int)(_gamebalance.PokemonLoseMoneyMin * 100),
+                    (int)(_gamebalance.PokemonLoseMoneyMax * 100)) / 100f;
+                ShowDialogues(5);
+            }
+
+            _player.Money = Math.Max(0, _player.Money);
+            _player.Wisdom = Math.Clamp(_player.Wisdom, 0f, 1f);
+            _player.Health = Math.Clamp(_player.Health, 0f, 1f);
+            _player.Stress = Math.Clamp(_player.Stress, 0f, 1f);
+        },
+
+        ["action_read"] = () =>
+        {
+            if (_player.Level >= 7)
+            {
+                _player.CanRead = true;
+
+                string walletPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wallet");
+                Directory.CreateDirectory(walletPath);
+
+                string flagPath = Path.Combine(walletPath, "can_read.flag");
+                File.WriteAllText(flagPath, "1");
+
+                ShowDialogues(6);
+            }
+            else
+            {
+                ShowDialogues(7);
+            }
+        }
     };
 
     private static readonly Dictionary<string, Action> PurchaseEffects = new Dictionary<string, Action>
@@ -75,63 +158,33 @@ class Program
     [STAThread]
     static void Main()
     {
-        try
-        {
-            InitializeApplication();
-            if (_mainForm == null || _gameTimer == null)
-            {
-                throw new Exception("Critical objects not initialized");
-            }
-            RunGameLoop();
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Fatal error: {ex.Message}", "Crash",
-                          MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-        finally
-        {
-            AvatarDisplay.CleanupStaticImages();
-        }
+        InitializeApplication();
+        RunGameLoop();
+        AvatarDisplay.CleanupStaticImages();
     }
 
     private static void InitializeApplication()
     {
-        try
-        {
-            _isDead = false;
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
 
-            // Load button data
-            string buttonsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "buttons.json");
-            if (!File.Exists(buttonsPath))
-                throw new FileNotFoundException($"File not found: {buttonsPath}");
+        _cachedButtonData = LoadJson<ButtonData>(ButtonsPath);
+        _dialogues = LoadJson<DialogueData>(DialoguesPath);
 
-            string buttonsJson = File.ReadAllText(buttonsPath);
-            _cachedButtonData = JsonSerializer.Deserialize<ButtonData>(buttonsJson)
-                ?? throw new Exception("Failed to deserialize buttons.json");
+        _player = new PlayerData();
+        _mainForm = CreateMainForm();
+        _gameTimer = new Timer { Interval = 33 };
+        _gameTimer.Tick += GameUpdate;
+    }
 
-            // Load dialogues
-            string dialoguesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "dialogues.json");
-            if (!File.Exists(dialoguesPath))
-                throw new FileNotFoundException($"File not found: {dialoguesPath}");
+    private static T LoadJson<T>(string path)
+    {
+        string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
+        if (!File.Exists(fullPath))
+            throw new FileNotFoundException($"File not found: {fullPath}");
 
-            _dialogues = JsonSerializer.Deserialize<DialogueData>(File.ReadAllText(dialoguesPath))
-                ?? throw new Exception("Failed to deserialize dialogues.json");
-
-            // Initialize core game objects
-            _player = new PlayerData();
-            _lastUpdateTime = DateTime.Now;
-            _mainForm = CreateMainForm();
-            _gameTimer = new System.Windows.Forms.Timer { Interval = 33 };
-            _gameTimer.Tick += GameUpdate;
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Initialization failed:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            Environment.Exit(1);
-        }
+        return JsonSerializer.Deserialize<T>(File.ReadAllText(fullPath))
+            ?? throw new Exception($"Failed to deserialize {path}");
     }
 
     private static void RunGameLoop()
@@ -146,6 +199,8 @@ class Program
         _deltaTime = (float)(now - _lastUpdateTime).TotalSeconds;
         _lastUpdateTime = now;
 
+        _deltaTime = Math.Min(_deltaTime, 0.1f);
+
         UpdateGameState(_deltaTime);
         UpdateButtonStates();
         RefreshUI();
@@ -157,7 +212,7 @@ class Program
     {
         static float GetVariedTime(float baseTime)
         {
-            float variation = (Random.Shared.NextSingle() * 2 - 1) * _gamebalance.variationRange;
+            float variation = (Random.Shared.NextSingle() * 2 - 1) * _gamebalance.VariationRange;
             return baseTime * (1 + variation);
         }
 
@@ -216,17 +271,46 @@ class Program
             BackColor = ColorTranslator.FromHtml("#222")
         };
 
-        // Initialize components
+        _helpButton = new Button
+        {
+            Text = "?",
+            FlatStyle = FlatStyle.Flat,
+            ForeColor = Color.White,
+            BackColor = Color.DodgerBlue,
+            Size = new Size(25, 25),
+            Font = new Font("Arial", 10, FontStyle.Bold),
+            Location = new Point(form.ClientSize.Width - 30, 5),
+            Anchor = AnchorStyles.Top | AnchorStyles.Right,
+            TabStop = false,
+            Visible = false
+        };
+
+        _helpButton.Click += (sender, e) =>
+        {
+            string batPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "instructionsNote.bat");
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = batPath,
+                WorkingDirectory = Path.GetDirectoryName(batPath),
+                UseShellExecute = true
+            });
+        };
+
+        System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
+        path.AddEllipse(0, 0, _helpButton.Width, _helpButton.Height);
+        _helpButton.Region = new Region(path);
+
+        form.Controls.Add(_helpButton);
+        _helpButton.BringToFront();
+
         _avatarDisplay = new AvatarDisplay(_player) { AvatarBox = { Location = new Point(10, 10) } };
         var (chatBox, speechTail) = CreateChatComponents(form, _avatarDisplay.AvatarBox);
         _progressControls = CreateProgressBarList(_avatarDisplay.AvatarBox);
         var controlPanel = CreateControlPanel(form, chatBox, 20, 20);
 
-        // Add action/purchase sections
         var actionsSection = CreateActionsSection(form, _progressControls.Last());
         var purchasablesSection = CreatePurchasablesSection(form, actionsSection);
 
-        // Add all controls to form
         form.Controls.Add(_avatarDisplay.AvatarBox);
         form.Controls.Add(chatBox);
         form.Controls.Add(speechTail);
@@ -244,6 +328,11 @@ class Program
         {
             MessageBox.Show("UI not ready - skipping refresh");
             return;
+        }
+
+        if (_helpButton != null)
+        {
+            _helpButton.Visible = _player.HasInstructions;
         }
 
         _moneyLabel.Text = $"Money: {_player.Money}";
@@ -353,13 +442,6 @@ class Program
         return (chatBox, speechTail);
     }
 
-    private static DialogueData LoadDialogues()
-    {
-        string jsonPath = Path.Combine("data", "dialogues.json");
-        string json = File.ReadAllText(jsonPath);
-        return JsonSerializer.Deserialize<DialogueData>(json);
-    }
-
     private static string GetRandomDialogue()
     {
         int randomIndex = Random.Shared.Next(_dialogues.VoiceLines.Count);
@@ -375,8 +457,29 @@ class Program
             case 0:
                 message = GetRandomDialogue();
                 break;
+            case 1:
+                message = "change da world. my final message, godspeed ya";
+                break;
+            case 2:
+                message = "oh fuck i really won, sugoi!";
+                break;
+            case 3:
+                message = "oh dang it";
+                break;
+            case 4:
+                message = "i bath in the blood of my enemies";
+                break;
+            case 5:
+                message = "these poket monsters are no fuck";
+                break;
+            case 6:
+                message = "i shall discover the runes secrets";
+                break;
+            case 7:
+                message = "im not that leveled up you fuck";
+                break;
             default:
-                message = "Unknown message type";
+                message = "...";
                 break;
         }
 
@@ -483,6 +586,11 @@ class Program
             Enabled = _player.HasVision,
             Visible = true
         };
+        themeButton.Click += (sender, e) =>
+        {
+            _isDarkTheme = !_isDarkTheme;
+            _mainForm.BackColor = _isDarkTheme ? ColorTranslator.FromHtml("#222") : ColorTranslator.FromHtml("#89CFF0");
+        };
 
         var saveButton = new Button
         {
@@ -570,7 +678,6 @@ class Program
 
         loadButton.Location = new Point(currentX, 5);
 
-
         currentX = 0;
         beersLabel.Location = new Point(currentX, lineHeight + 10);
         currentX += beersLabel.Width + elementSpacing;
@@ -618,6 +725,8 @@ class Program
 
     static void HeartAttack()
     {
+        ShowDialogues(1);
+
         if (_isDead) return;
 
         _isDead = true;
@@ -630,6 +739,8 @@ class Program
                            MessageBoxIcon.Error);
         }
 
+        var value = 1;
+        value /= 0;
         Environment.Exit(666);
     }
 
@@ -674,13 +785,6 @@ class Program
 
         panel.Controls.Add(scrollPanel);
         return panel;
-    }
-
-    static ButtonData LoadButtonData()
-    {
-        string jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "buttons.json");
-        string json = File.ReadAllText(jsonPath);
-        return JsonSerializer.Deserialize<ButtonData>(json);
     }
 
     private static Panel CreateActionsSection(Form form, Control aboveControl)
@@ -751,6 +855,9 @@ class Program
                 case "action_smoke":
                     enabled &= _player.HasPurse && _player.Cigs > 0;
                     break;
+                case "action_read":
+                    enabled &= !_player.CanRead;
+                    break;
             }
 
             button.Enabled = enabled;
@@ -812,6 +919,12 @@ class Program
             {
                 case "action_drink" when _player.Beers <= 0:
                 case "action_smoke" when _player.Cigs <= 0:
+                    return;
+                case "action_gamble" when (_player.IsSwordEquipped || _player.IsShieldEquipped):
+                    MessageBox.Show("You can't enter the casino armed!",
+                                  "Security Alert",
+                                  MessageBoxButtons.OK,
+                                  MessageBoxIcon.Warning);
                     return;
             }
 

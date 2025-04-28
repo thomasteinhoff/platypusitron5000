@@ -51,7 +51,7 @@ public class PlayerData
     public float Health { get; set; } = 1f;
     public float Wisdom { get; set; } = 0f;
     public float Vigor { get; set; } = 1f;
-    public float Money { get; set; } = 42353436f;
+    public float Money { get; set; } = 0f;
     public int Level { get; set; } = 1;
 
     // Inventory

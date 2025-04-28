@@ -14,3 +14,5 @@ C:\Users\thoma\Projects\platypusSimulator5000\obj\Debug\net6.0-windows\platypusS
 C:\Users\thoma\Projects\platypusSimulator5000\obj\Debug\net6.0-windows\ref\platypusSimulator5000.dll
 C:\Users\thoma\Projects\platypusSimulator5000\bin\Debug\net6.0-windows\data\buttons.json
 C:\Users\thoma\Projects\platypusSimulator5000\bin\Debug\net6.0-windows\data\dialogues.json
+C:\Users\thoma\Projects\platypusSimulator5000\obj\Debug\net6.0-windows\platypusSimulator5000.sourcelink.json
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Debug\net6.0-windows\data\instructionsNote.bat

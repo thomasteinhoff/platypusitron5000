@@ -1,0 +1,102 @@
+{
+    "actionButtons": [
+        {
+            "id": "action_peck",
+            "text": "Peck strangers in the street"
+        },
+        {
+            "id": "action_glow",
+            "text": "Glow a little"
+        },
+        {
+            "id": "action_poison",
+            "text": "Poison 'n eat domestic rodents"
+        },
+        {
+            "id": "action_smoke",
+            "text": "Smoke"
+        },
+        {
+            "id": "action_drink",
+            "text": "Drink Beer"
+        },
+        {
+            "id": "action_gamble",
+            "text": "Bet on Red"
+        },
+        {
+            "id": "action_gamble",
+            "text": "Bet on Black"
+        },
+        {
+            "id": "action_pokemon",
+            "text": "Pokemon Battle"
+        },
+        {
+            "id": "action_read",
+            "text": "Learn to read"
+        }
+    ],
+    "productButtons": [
+        {
+            "id": "product_beer",
+            "text": "Pilsen Beer",
+            "price": 8.7329
+        },
+        {
+            "id": "product_cigarettes",
+            "text": "Pack of Flavored Cigarettes",
+            "price": 9.27
+        },
+        {
+            "id": "product_instructions",
+            "text": "Instructions Note",
+            "price": 3.2840293586
+        },
+        {
+            "id": "product_purse",
+            "text": "Pretty Pink Purse",
+            "price": 62.1417
+        },
+        {
+            "id": "product_sword",
+            "text": "Sword of Eternal Madness",
+            "price": 153.8743
+        },
+        {
+            "id": "product_shield",
+            "text": "Shield of the Sacre Reflection",
+            "price": 291.4562
+        },
+        {
+            "id": "product_vision",
+            "text": "Enhance Vision Organs",
+            "price": 512.475
+        },
+        {
+            "id": "product_brain",
+            "text": "Upgrade Brain Hard Disk Capacity",
+            "price": 1187.64
+        },
+        {
+            "id": "product_reach",
+            "text": "Elevate Members Reach Radius",
+            "price": 772.3825
+        },
+        {
+            "id": "product_acid",
+            "text": "New Hydrochloric Acid Recipe",
+            "price": 873.1913
+        },
+        {
+            "id": "product_freedom",
+            "text": "Adquire Freedom",
+            "price": 48750.0
+        },
+        {
+            "id": "product_property",
+            "text": "Private Domicile",
+            "price": 246480.0
+        }
+    ]
+}

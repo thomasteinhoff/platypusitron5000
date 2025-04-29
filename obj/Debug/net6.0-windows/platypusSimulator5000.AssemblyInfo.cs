@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("platypusSimulator5000")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+335c6de16a43b1b2ba005f4f4debaf66c0bfe6fc")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+eb299c98f72a5cdedaec205b0672d325ccc142d4")]
 [assembly: System.Reflection.AssemblyProductAttribute("platypusSimulator5000")]
 [assembly: System.Reflection.AssemblyTitleAttribute("platypusSimulator5000")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -113,6 +113,7 @@ class Program
                 Directory.CreateDirectory(walletPath);
 
                 string flagPath = Path.Combine(walletPath, "can_read.flag");
+
                 File.WriteAllText(flagPath, "1");
 
                 ShowDialogues(6);
@@ -249,6 +250,12 @@ class Program
         float vigorIncreasePerSecond = 1f / actualVigorTime;
         _player.Vigor += vigorIncreasePerSecond * deltaTime;
         _player.Vigor = Math.Clamp(_player.Vigor, 0f, 1f);
+
+        if (_player.Wisdom >= 1f)
+        {
+            _player.Level++;
+            _player.Wisdom = 0f;
+        }
 
         if (_player.Stress >= 1f || _player.Health <= 0) HeartAttack();
 
@@ -388,7 +395,7 @@ class Program
         ("Famine", _player.Famine),
         ("Health", _player.Health),
         ("Wisdom", _player.Wisdom),
-        ("Progress", _player.Vigor)
+        ("Vigor", _player.Vigor)
         };
 
         for (int i = 0; i < stats.Length; i++)
@@ -458,25 +465,25 @@ class Program
                 message = GetRandomDialogue();
                 break;
             case 1:
-                message = "change da world. my final message, godspeed ya";
+                message = "This is it, huh? Uninstalled by life itself. Godspeed, cursor tyrant.";
                 break;
             case 2:
-                message = "oh fuck i really won, sugoi!";
+                message = "Statistically improbable. Emotionally disappointing.";
                 break;
             case 3:
-                message = "oh dang it";
+                message = "Shockingly, betting on chaos didn’t pay off. Again.";
                 break;
             case 4:
-                message = "i bath in the blood of my enemies";
+                message = "Victory. With nothing but my flippers and existential dread.";
                 break;
             case 5:
-                message = "these poket monsters are no fuck";
+                message = "Turns out rage isn't super effective against everything.";
                 break;
             case 6:
-                message = "i shall discover the runes secrets";
+                message = "Ah, literacy. Another illusion of freedom unlocked.";
                 break;
             case 7:
-                message = "im not that leveled up you fuck";
+                message = "Apparently, ignorance is my level cap.";
                 break;
             default:
                 message = "...";
@@ -739,8 +746,6 @@ class Program
                            MessageBoxIcon.Error);
         }
 
-        var value = 1;
-        value /= 0;
         Environment.Exit(666);
     }
 

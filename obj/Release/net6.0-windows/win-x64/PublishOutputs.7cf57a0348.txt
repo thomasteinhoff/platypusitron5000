@@ -1,0 +1,13 @@
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Release\net6.0-windows\win-x64\publish\platypusSimulator5000.pdb
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Release\net6.0-windows\win-x64\publish\assets\sprites\SerenePandemonium.png
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Release\net6.0-windows\win-x64\publish\assets\sprites\ShieldOfTheSacreReflection.png
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Release\net6.0-windows\win-x64\publish\assets\sprites\SwordOfEternalMadness.png
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Release\net6.0-windows\win-x64\publish\data\buttons.json
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Release\net6.0-windows\win-x64\publish\data\dialogues.json
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Release\net6.0-windows\win-x64\publish\data\instructionsNote.bat
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Release\net6.0-windows\win-x64\publish\wallet\aQuarterOfAPhone.jpg
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Release\net6.0-windows\win-x64\publish\wallet\can_read.flag
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Release\net6.0-windows\win-x64\publish\wallet\DarkSoulsPrepareToDieEditionSteamKey.rar
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Release\net6.0-windows\win-x64\publish\wallet\driverlicense.jpg
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Release\net6.0-windows\win-x64\publish\wallet\Spare.jpg
+C:\Users\thoma\Projects\platypusSimulator5000\bin\Release\net6.0-windows\win-x64\publish\platypusSimulator5000.exe

@@ -1,22 +1,68 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>  <!-- Prevents console window -->
-    <TargetFramework>net6.0-windows</TargetFramework>  <!-- Must target Windows -->
-    <UseWindowsForms>true</UseWindowsForms>  <!-- Enables WinForms -->
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>false</SelfContained>
   </PropertyGroup>
-    <ItemGroup>
+
+  <ItemGroup>
+    
+    <None Update="assets/sprites/SerenePandemonium.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInSingleFile>true</IncludeInSingleFile>
+    </None>
+    
+    <None Update="assets/sprites/ShieldOfTheSacreReflection.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInSingleFile>true</IncludeInSingleFile>
+    </None>
+    
+    <None Update="assets/sprites/SwordOfEternalMadness.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInSingleFile>true</IncludeInSingleFile>
+    </None>
 
     <None Update="data/buttons.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None> 
+      <IncludeInSingleFile>true</IncludeInSingleFile>
+    </None>
 
     <None Update="data/dialogues.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInSingleFile>true</IncludeInSingleFile>
     </None>
 
     <None Update="data/instructionsNote.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInSingleFile>true</IncludeInSingleFile>
+    </None>
+
+    <None Update="wallet/can_read.flag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInSingleFile>true</IncludeInSingleFile>
     </None>
     
+    <None Update="wallet/aQuarterOfAPhone.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInSingleFile>true</IncludeInSingleFile>
+    </None>
+    
+    <None Update="wallet/DarkSoulsPrepareToDieEditionSteamKey.rar">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInSingleFile>true</IncludeInSingleFile>
+    </None>
+    
+    <None Update="wallet/driverlicense.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInSingleFile>true</IncludeInSingleFile>
+    </None>
+
+    
+    <None Update="wallet/Spare.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInSingleFile>true</IncludeInSingleFile>
+    </None>
   </ItemGroup>
 </Project>

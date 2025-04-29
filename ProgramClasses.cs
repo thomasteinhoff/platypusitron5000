@@ -9,7 +9,7 @@ public class GameBalance
     // Existing properties
     public float HealthDecayRate { get; } = 10f;
     public float VigorDecayRate { get; } = 1.5f;
-    public float StressGainRate { get; } = 120f;
+    public float StressGainRate { get; } = 180f;
     public float FamineGainRate { get; } = 60f;
     public float VariationRange { get; } = 0.1f;
 
@@ -17,8 +17,8 @@ public class GameBalance
     public float PeckMoneyMin { get; } = 3f;
     public float PeckMoneyMax { get; } = 9f;
 
-    public float GlowWisdomMin { get; } = 0.03f;
-    public float GlowWisdomMax { get; } = 0.06f;
+    public float GlowWisdomMin { get; } = 0.06f;
+    public float GlowWisdomMax { get; } = 0.1f;
 
     public float SmokeStressReduction { get; } = 0.28f;
     public float DrinkHealthIncrease { get; } = 0.25f;

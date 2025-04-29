@@ -78,7 +78,7 @@ class Program
             if (_player.IsSwordEquipped) winrate += _gamebalance.PokemonSwordBonus;
             if (_player.IsShieldEquipped) winrate += _gamebalance.PokemonShieldBonus;
 
-            if (randomValue > winrate)  // win
+            if (randomValue < winrate)  // win
             {
                 _player.Money += Random.Shared.Next(
                     (int)(_gamebalance.PokemonWinMoneyMin * 100),
